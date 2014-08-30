@@ -7,9 +7,9 @@ import pygame
 import random
 
 
-def get_random_color():
+def random_rgb_color():
     """
-        Retorna uma cor aleatória em RGB
+        Gera uma cor aleatória em RGB
     """
     return(
         random.randint(0, 255),
@@ -19,6 +19,9 @@ def get_random_color():
 
 
 def main():
+    """
+        Executa o game
+    """
     pygame.init()
 
     # cria uma tela no tamanho 600 x 480
@@ -37,7 +40,7 @@ def main():
         pygame.display.flip()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            color = get_random_color()
+            color = random_rgb_color()
 
         elif event.type == pygame.QUIT:
             pygame.quit()
