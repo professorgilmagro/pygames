@@ -106,7 +106,7 @@ class character(pygame.sprite.Sprite):
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
         self.rect.topleft = 50, 10
-        self.move = 1
+        self.move = 4
         self.dizzy = 0
 
     def update(self):
@@ -164,17 +164,22 @@ class score():
             "Score: %s" % self.score, True, (255, 255, 255)
         )
 
+    def get_score(self):
+        return self.score
+
 
 def main():
     """Esta função é chamada quando o programa for iniciado."""
-
     pygame.init()
-    screen = pygame.display.set_mode((800, 600))
+
+    SCREEN_SIZE = pygame.display.list_modes()[0]
+    screen = pygame.display.set_mode(SCREEN_SIZE)
     pygame.display.set_caption("O invasor do Espaço")
     pygame.mouse.set_visible(False)
 
 # Cria o fundo
     background = load_image("bkg.jpg")[0]
+    background = pygame.transform.scale(background, SCREEN_SIZE)
 
 # Cria o texto
     if pygame.font:
@@ -201,13 +206,23 @@ def main():
     pygame.mixer.music.load("data/intro.wav")
     pygame.mixer.music.play()
 
+    # game over message
+    font = pygame.font.Font(None, 40)
+    end = font.render("Game Over!", True, (255, 255, 0))
+
+    pos = end.get_rect(
+        centerx=screen.get_width() / 2,
+        centery=screen.get_height() / 2
+    )
+
+    pygame.display.toggle_fullscreen()
     while True:
         clock.tick(360)
 
         if pygame.mixer.music.get_busy():
             continue
 
-    # Escuta os eventos do mouse e teclado
+        # Escuta os eventos do mouse e teclado
         for event in pygame.event.get():
             if event.type == QUIT:
                 return
@@ -222,6 +237,11 @@ def main():
                     points = point.render(-1)
             elif event.type is MOUSEBUTTONUP:
                 fist.unpunch()
+
+        if point.get_score() <= -1:
+            screen.blit(end, pos)
+            pygame.display.flip()
+            continue
 
     # Redesenha todo o cenário
         screen.blit(background, (0, 0))
