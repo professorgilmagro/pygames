@@ -17,8 +17,6 @@ utilizando os recursos mais comuns:
 Fonte: http://www.pygame.org/docs
 """
 
-from pygame.locals import *
-
 try:
     import os
     import sys
@@ -32,6 +30,10 @@ if not pygame.font:
     print 'Aviso: Fontes desabilitadas!'
 if not pygame.mixer:
     print 'Aviso: Som desabilitado!'
+
+pygame.init()
+SCREEN_SIZE = (1280, 1024)
+MAX_MISS = 3
 
 
 def load_image(name, colorkey=None, resize=None):
@@ -47,7 +49,7 @@ def load_image(name, colorkey=None, resize=None):
     if colorkey is not None:
         if colorkey is -1:
             colorkey = image.get_at((0, 0))
-        image.set_colorkey(colorkey, RLEACCEL)
+        image.set_colorkey(colorkey, pygame.RLEACCEL)
 
     if resize is not None:
         image = pygame.transform.scale(image, resize)
@@ -132,8 +134,8 @@ class Character(pygame.sprite.Sprite):
         """movimenta o personagem no cenário e o gira horizontamente quando
         atinge as extremidades"""
         newpos = self.rect.move((self.move, 0))
-        if self.rect.left < self.area.left \
-           or self.rect.right > self.area.right:
+        if (self.rect.left < self.area.left
+           or self.rect.right > self.area.right):
             self.move = -self.move
             newpos = self.rect.move((self.move, 0))
             self.image = pygame.transform.flip(self.image, 1, 0)
@@ -154,12 +156,15 @@ class Character(pygame.sprite.Sprite):
             self.image = rotate(self.original, self.dizzy)
             self.rect = self.image.get_rect()
             randint = random.randint
-            self.rect.topleft = randint(10, 200), randint(10, 300)
+            self.rect.topleft = randint(40, 600), randint(40, 800)
 
     def punched(self):
+        i = 1
+        if self.move < 0:
+            i = -1
+
+        self.move += i
         self.sound.play()
-        self.sound.set_volume(1)
-        self.move += 1
         if not self.dizzy:
             self.dizzy = 1
             self.original = self.image
@@ -168,22 +173,10 @@ class Character(pygame.sprite.Sprite):
 class Score():
     """Gera o placar de pontuação do jogo"""
     def __init__(self):
-        self._score = 0
+        self.score = 0
+        self.miss = 0
         self._increase = 1
         self._hit_val = 1
-        self._miss = 0
-
-    @property
-    def score(self):
-        return self._score
-
-    @property
-    def miss(self):
-        return self._miss
-
-    @miss.setter
-    def miss(self, value):
-        self._miss = value
 
     @property
     def increase(self):
@@ -214,12 +207,7 @@ class Score():
 
 def main():
     """Esta função é chamada quando o programa for iniciado."""
-    pygame.init()
-
-    SCREEN_SIZE = pygame.display.list_modes()[0]
-    MAX_MISS = 3
-
-    screen = pygame.display.set_mode(SCREEN_SIZE)
+    screen = pygame.display.set_mode(SCREEN_SIZE, pygame.FULLSCREEN)
     pygame.display.set_caption("O invasor do Espaço")
     pygame.mouse.set_visible(False)
 
@@ -270,16 +258,16 @@ def main():
             continue
 
         theme_sound.play()
-        theme_sound.set_volume(.5)
         score.increase = 0
 
         # Escuta os eventos do mouse e teclado
         for event in pygame.event.get():
-            if event.type == QUIT:
+            if event.type == pygame.QUIT:
                 return
-            elif event.type == KEYDOWN and event.key == K_ESCAPE:
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 return
-            elif event.type == MOUSEBUTTONDOWN and score.miss < MAX_MISS:
+            elif (event.type == pygame.MOUSEBUTTONDOWN
+                  and score.miss < MAX_MISS):
                 if fist.punch(person):
                     score.increase = True
                     person.punched()
@@ -287,7 +275,7 @@ def main():
                     score.increase = False
                     score.miss += 1
                     whiff_sound.play()
-            elif event.type is MOUSEBUTTONUP:
+            elif event.type is pygame.MOUSEBUTTONUP:
                 fist.unpunch()
 
         screen.blit(background, (0, 0))
