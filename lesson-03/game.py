@@ -34,7 +34,7 @@ if not pygame.mixer:
     print 'Aviso: Som desabilitado!'
 
 
-def load_image(name, colorkey=None):
+def load_image(name, colorkey=None, resize=None):
     # Cria a imagem a partir do nome informado
     fullname = os.path.join("data", name)
     try:
@@ -48,6 +48,10 @@ def load_image(name, colorkey=None):
         if colorkey is -1:
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey, RLEACCEL)
+
+    if resize is not None:
+        image = pygame.transform.scale(image, resize)
+
     return image, image.get_rect()
 
 
@@ -68,7 +72,7 @@ def load_sound(sound_name):
     return sound
 
 
-class sock(pygame.sprite.Sprite):
+class Sock(pygame.sprite.Sprite):
     #movimenta o punho pela tela seguindo o mouse
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -95,7 +99,7 @@ class sock(pygame.sprite.Sprite):
         self.punching = 0
 
 
-class character(pygame.sprite.Sprite):
+class Character(pygame.sprite.Sprite):
     """Movimenta o personagem pela tela. Dispara o som quando é atingido e
     o muda de posição"""
     def __init__(self):
@@ -106,8 +110,16 @@ class character(pygame.sprite.Sprite):
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
         self.rect.topleft = 50, 10
-        self.move = 4
+        self._move = 2
         self.dizzy = 0
+
+    @property
+    def move(self):
+        return self._move
+
+    @move.setter
+    def move(self, value):
+        self._move = value
 
     def update(self):
         "faz o personagem andar ou rotacionar dependendo do status"
@@ -146,26 +158,58 @@ class character(pygame.sprite.Sprite):
 
     def punched(self):
         self.sound.play()
+        self.sound.set_volume(1)
+        self.move += 1
         if not self.dizzy:
             self.dizzy = 1
             self.original = self.image
 
 
-class score():
+class Score():
     """Gera o placar de pontuação do jogo"""
     def __init__(self):
-        self.score = 0
-        self.increase = 1
+        self._score = 0
+        self._increase = 1
+        self._hit_val = 1
+        self._miss = 0
 
-    def render(self, increase=1):
+    @property
+    def score(self):
+        return self._score
+
+    @property
+    def miss(self):
+        return self._miss
+
+    @miss.setter
+    def miss(self, value):
+        self._miss = value
+
+    @property
+    def increase(self):
+        return self._increase
+
+    @increase.setter
+    def increase(self, value):
+        if value is False or value < 0:
+            value = -1
+        else:
+            value = 1
+
+        self._increase = value
+
+    def render_score(self):
         font = pygame.font.Font(None, 40)
-        self.score += self.increase * increase
+        self.score += self._hit_val * self.increase
         return font.render(
             "Score: %s" % self.score, True, (255, 255, 255)
         )
 
-    def get_score(self):
-        return self.score
+    def render_miss(self):
+        font = pygame.font.Font(None, 30)
+        return font.render(
+            "Erros: %s" % self.miss, True, (255, 255, 0)
+        )
 
 
 def main():
@@ -173,47 +217,50 @@ def main():
     pygame.init()
 
     SCREEN_SIZE = pygame.display.list_modes()[0]
+    MAX_MISS = 3
+
     screen = pygame.display.set_mode(SCREEN_SIZE)
     pygame.display.set_caption("O invasor do Espaço")
     pygame.mouse.set_visible(False)
 
-# Cria o fundo
+    # Cria o fundo
     background = load_image("bkg.jpg")[0]
     background = pygame.transform.scale(background, SCREEN_SIZE)
 
-# Cria o texto
-    if pygame.font:
-        font = pygame.font.Font(None, 36)
-        text = font.render("O invasor deve ser detido.", True, (255, 255, 255))
-        textpos = text.get_rect(centerx=background.get_width() / 2)
-        background.blit(text, textpos)
+    # Cria o texto
+    font = pygame.font.Font(None, 36)
+    text = font.render("O invasor deve ser detido.", True, (255, 255, 255))
+    textpos = text.get_rect(centerx=background.get_width() / 2)
+    background.blit(text, textpos)
 
-        point = score()
-        points = point.render(0)
-
-# Mostra o fundo e pontuação inicial
+    # Mostra o fundo e pontuação inicial
     screen.blit(background, (0, 0))
     screen.blit(load_image("dragao.gif")[0], (80, 60))
     pygame.display.flip()
 
-# Prepara os objetos do jogo
+    # Prepara os objetos do jogo
     clock = pygame.time.Clock()
     whiff_sound = load_sound("miss.wav")
-    person = character()
-    fist = sock()
+    person = Character()
+    fist = Sock()
     all_sprites = pygame.sprite.RenderPlain((fist, person))
 
+    # Carrega os sons
     pygame.mixer.music.load("data/intro.wav")
     pygame.mixer.music.play()
+    game_over_sound = load_sound("game_over.ogg")
+    theme_sound = load_sound("theme.ogg")
 
     # game over message
     font = pygame.font.Font(None, 40)
-    end = font.render("Game Over!", True, (255, 255, 0))
+    game_over = font.render("Game Over!", True, (255, 255, 0))
 
-    pos = end.get_rect(
+    pos = game_over.get_rect(
         centerx=screen.get_width() / 2,
         centery=screen.get_height() / 2
     )
+
+    score = Score()
 
     pygame.display.toggle_fullscreen()
     while True:
@@ -222,30 +269,40 @@ def main():
         if pygame.mixer.music.get_busy():
             continue
 
+        theme_sound.play()
+        theme_sound.set_volume(.5)
+        score.increase = 0
+
         # Escuta os eventos do mouse e teclado
         for event in pygame.event.get():
             if event.type == QUIT:
                 return
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 return
-            elif event.type == MOUSEBUTTONDOWN:
+            elif event.type == MOUSEBUTTONDOWN and score.miss < MAX_MISS:
                 if fist.punch(person):
-                    points = point.render(1)
+                    score.increase = True
                     person.punched()
                 else:
+                    score.increase = False
+                    score.miss += 1
                     whiff_sound.play()
-                    points = point.render(-1)
             elif event.type is MOUSEBUTTONUP:
                 fist.unpunch()
 
-        if point.get_score() <= -1:
-            screen.blit(end, pos)
+        screen.blit(background, (0, 0))
+        screen.blit(score.render_score(), (10, 10))
+        screen.blit(score.render_miss(), (10, 50))
+
+        if score.miss == MAX_MISS:
+            screen.blit(*load_image("end.jpg", 1, SCREEN_SIZE))
+            screen.blit(game_over, pos)
             pygame.display.flip()
+            theme_sound.stop()
+            game_over_sound.play()
             continue
 
-    # Redesenha todo o cenário
-        screen.blit(background, (0, 0))
-        screen.blit(points, (10, 10))
+        # Redesenha e atualiza todo o cenário
         all_sprites.update()
         all_sprites.draw(screen)
         pygame.display.flip()
