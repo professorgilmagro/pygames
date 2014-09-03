@@ -32,7 +32,7 @@ if not pygame.mixer:
     print 'Aviso: Som desabilitado!'
 
 pygame.init()
-SCREEN_SIZE = (1280, 1024)
+SCREEN_SIZE = pygame.display.list_modes()[0]
 MAX_MISS = 3
 
 
@@ -156,7 +156,10 @@ class Character(pygame.sprite.Sprite):
             self.image = rotate(self.original, self.dizzy)
             self.rect = self.image.get_rect()
             randint = random.randint
-            self.rect.topleft = randint(40, 600), randint(40, 800)
+            self.rect.topleft = (
+                randint(40, SCREEN_SIZE[0]) - 100,
+                randint(40, SCREEN_SIZE[1]) - 75
+            )
 
     def punched(self):
         i = 1
@@ -207,7 +210,7 @@ class Score():
 
 def main():
     """Esta função é chamada quando o programa for iniciado."""
-    screen = pygame.display.set_mode(SCREEN_SIZE, pygame.FULLSCREEN)
+    screen = pygame.display.set_mode(SCREEN_SIZE)
     pygame.display.set_caption("O invasor do Espaço")
     pygame.mouse.set_visible(False)
 
@@ -285,6 +288,7 @@ def main():
         if score.miss == MAX_MISS:
             screen.blit(*load_image("end.jpg", 1, SCREEN_SIZE))
             screen.blit(game_over, pos)
+            screen.blit(score.render_score(), (10, 10))
             pygame.display.flip()
             theme_sound.stop()
             game_over_sound.play()
