@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+
+# Gilmar S. Santos <gilmar.pythonman@outlook.com>
+
 import pygame
 import os
 
