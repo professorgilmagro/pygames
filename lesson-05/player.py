@@ -10,7 +10,7 @@ class Player(pygame.sprite.Sprite):
     """
 
     # Define a velocidade de movimento do jogador
-    speed_x, speed_y = 0, 0
+    move_x, move_y = 0, 0
 
     # Garda as posicoes do spritesheet para animar o personagem enquanto anda
     walk_frames_left = []
@@ -30,8 +30,8 @@ class Player(pygame.sprite.Sprite):
 
         # carrega todas as images (fatiadas) e a guarda nos frames
         for x in range(0, 4):
-            pos_left = (110 * x, 145, 110, 145)
-            pos_right = (110 * x, 290, 110, 145)
+            pos_left = (107 * x, 145, 107, 145)
+            pos_right = (107 * x, 290, 107, 145)
             self.walk_frames_left.append(sprite_sheet.get_image(*pos_left))
             self.walk_frames_right.append(sprite_sheet.get_image(*pos_right))
 
@@ -47,32 +47,55 @@ class Player(pygame.sprite.Sprite):
         """
 
         # gravidade
-        # self.calc_grav()
+        self.calc_gravity()
 
          # Movimenta para esquerda ou direita
-        self.rect.x += self.speed_x
+        self.rect.x += self.move_x
         pos = self.rect.x
         if self.direction == "R":
-            frame = (pos // 23) % len(self.walk_frames_right)
+            frame = (pos // 30) % len(self.walk_frames_right)
             self.image = self.walk_frames_right[frame]
         else:
-            frame = (pos // 23) % len(self.walk_frames_left)
+            frame = (pos // 30) % len(self.walk_frames_left)
             self.image = self.walk_frames_left[frame]
 
+    def calc_gravity(self):
+        """
+        Calcula o efeito gravidade
+        """
+        if self.move_y == 0:
+            self.move_y = 1
+        else:
+            self.move_y += .35
+
+        # verifica se estamos no chao e fazemos os ajustes
+        if (self.rect.y >= const.SCREEN_HEIGHT - self.rect.height
+           and self.move_y >= 0):
+            self.move_y = 0
+            self.rect.y = const.SCREEN_HEIGHT - self.rect.height
+
     def go_left(self):
-        self.speed_x = -5
+        self.move_x = -5
         self.direction = "L"
 
     def go_right(self):
-        self.speed_x = 5
+        self.move_x = 5
         self.direction = "R"
 
     def stop(self):
-        self.speed_x = 0
+        self.move_x = 0
+
+    def jump(self):
+        self.rect.y += 2
+
+        if self.rect.bottom >= const.SCREEN_HEIGHT:
+            self.move_y = -10
 
 
 class SpriteSheet(object):
-    """ Classe usada para cortar imagens dentro de um spritesheet """
+    """
+    Classe usada para cortar imagens dentro de um spritesheet
+    """
 
     sprite_sheet = None
 

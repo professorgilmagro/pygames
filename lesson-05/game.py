@@ -43,10 +43,13 @@ def main():
             if key == pygame.K_RIGHT:
                 player.go_right()
 
+            if key == pygame.K_UP:
+                player.jump()
+
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT and player.speed_x < 0:
+                if event.key == pygame.K_LEFT and player.move_x < 0:
                     player.stop()
-                if event.key == pygame.K_RIGHT and player.speed_x > 0:
+                if event.key == pygame.K_RIGHT and player.move_x > 0:
                     player.stop()
 
         screen.fill(const.BLACK)
