@@ -1,6 +1,7 @@
 import pygame
 import utils
 import constants as const
+from platforms import MovingPlatform
 
 
 class Player(pygame.sprite.Sprite):
@@ -46,18 +47,47 @@ class Player(pygame.sprite.Sprite):
         Move o personagem.
         """
 
-        # gravidade
+        # Gravidade
         self.calc_gravity()
 
          # Movimenta para esquerda ou direita
         self.rect.x += self.move_x
-        pos = self.rect.x
+        pos = self.rect.x + self.level.world_shift
         if self.direction == "R":
             frame = (pos // 30) % len(self.walk_frames_right)
             self.image = self.walk_frames_right[frame]
         else:
             frame = (pos // 30) % len(self.walk_frames_left)
             self.image = self.walk_frames_left[frame]
+
+        # Verica se houve colisao com as plataformas (horizontal)
+        block_hit_list = pygame.sprite.spritecollide(
+            self, self.level.platform_list, False
+        )
+
+        for block in block_hit_list:
+            if self.move_x > 0:
+                self.rect.right = block.rect.left
+            elif self.move_x < 0:
+                self.rect.left = block.rect.right
+
+        self.rect.y += self.move_y
+
+         # Verica se houve colisao com as plataformas (vertical)
+        block_hit_list = pygame.sprite.spritecollide(
+            self, self.level.platform_list, False
+        )
+
+        for block in block_hit_list:
+            if self.move_y > 0:
+                self.rect.bottom = block.rect.top
+            elif self.move_y < 0:
+                self.rect.top = block.rect.bottom
+
+            self.move_y = 0
+
+            if isinstance(block, MovingPlatform):
+                self.rect.x += block.move_x
 
     def calc_gravity(self):
         """
@@ -88,8 +118,17 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         self.rect.y += 2
 
-        if self.rect.bottom >= const.SCREEN_HEIGHT:
+        # verifica se houve colisao ao subir (bater a cabeca em alguma coisa)
+        platform_hit_list = pygame.sprite.spritecollide(
+            self, self.level.platform_list, False
+        )
+
+        self.rect.y -= 2
+
+        list_len = len(platform_hit_list)
+        if (list_len > 0 or self.rect.bottom >= const.SCREEN_HEIGHT):
             self.move_y = -10
+            utils.load_sound("jump.wav").play()
 
 
 class SpriteSheet(object):

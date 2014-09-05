@@ -3,7 +3,7 @@ import pygame
 import constants as const
 
 """
-Permite o carregamento de midias
+Funcoes comuns
 """
 
 

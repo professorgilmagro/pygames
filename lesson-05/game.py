@@ -5,7 +5,9 @@
 
 import pygame
 import os
+
 import utils
+import levels
 import constants as const
 
 from player import Player
@@ -21,12 +23,24 @@ def main():
     pygame.mouse.set_visible(False)
 
     player = Player()
+    music = utils.load_sound("8_bit_theme.wav")
 
     # prepara o personagem na tela
     active_sprite_list = pygame.sprite.Group()
     player.rect.x = 340
     player.rect.y = const.SCREEN_HEIGHT - player.rect.height
     active_sprite_list.add(player)
+
+    # Cria os niveis do jogo
+    level_list = []
+    level_list.append(levels.Level_01(player))
+
+    # Set the current level
+    level_number = 0
+    current_level = level_list[level_number]
+
+    active_sprite_list = pygame.sprite.Group()
+    player.level = current_level
 
     clock = pygame.time.Clock()
     running = True
@@ -52,8 +66,24 @@ def main():
                 if event.key == pygame.K_RIGHT and player.move_x > 0:
                     player.stop()
 
+        if not pygame.mixer.get_busy():
+            music.play()
+
         screen.fill(const.BLACK)
         active_sprite_list.update()
+        current_level.update()
+
+        # controla o scrolling do game
+        if player.rect.x >= 500:
+            diff = player.rect.x - 500
+            player.rect.x = 500
+            current_level.shift_world(-diff)
+
+        if player.rect.x <= 120:
+            diff = 120 - player.rect.x
+            player.rect.x = 120
+            current_level.shift_world(diff)
+
         active_sprite_list.draw(screen)
 
         clock.tick(60)
