@@ -2,9 +2,10 @@ import pygame
 
 import constants as const
 import platforms
+import utils
 
 
-class Level(object):
+class Level():
     """
     Classe base para definicao de level
     """
@@ -14,6 +15,8 @@ class Level(object):
     enemy_list = None
 
     background = None
+    world_shift = 0
+    level_limit = -1000
 
     def __init__(self, player):
         self.platform_list = pygame.sprite.Group()
@@ -25,9 +28,9 @@ class Level(object):
         self.enemy_list.update()
 
     def draw(self, screen):
-
         # Desenha o fundo em azul
         screen.fill(const.BLUE)
+        screen.blit(self.background, (self.world_shift // 3, 0))
 
         # Desenha todos os sprites na tela
         self.platform_list.draw(screen)
@@ -58,7 +61,7 @@ class Level_01(Level):
     def __init__(self, player):
         Level.__init__(self, player)
 
-        self.background = pygame.image.load("background_01.jpg").convert()
+        self.background = utils.load_image("background_01.jpg")
         self.background.set_colorkey(const.WHITE)
         self.level_limit = -2500
 
@@ -94,6 +97,49 @@ class Level_01(Level):
         block.boundary_left = 1350
         block.boundary_right = 1600
         block.change_x = 1
+        block.player = self.player
+        block.level = self
+        self.platform_list.add(block)
+
+
+class Level_02(Level):
+    """
+    Define os objetos (plataformas) e fundo a ser utilizado no segundo level
+    """
+
+    def __init__(self, player):
+
+        Level.__init__(self, player)
+
+        self.background = utils.load_image("background_02.jpg")
+        self.level_limit = -1000
+
+        level = [[platforms.STONE_PLATFORM_LEFT, 500, 550],
+                [platforms.STONE_PLATFORM_MIDDLE, 570, 550],
+                [platforms.STONE_PLATFORM_RIGHT, 640, 550],
+                [platforms.GRASS_LEFT, 800, 400],
+                [platforms.GRASS_MIDDLE, 870, 400],
+                [platforms.GRASS_RIGHT, 940, 400],
+                [platforms.GRASS_LEFT, 1000, 500],
+                [platforms.GRASS_MIDDLE, 1070, 500],
+                [platforms.GRASS_RIGHT, 1140, 500],
+                [platforms.STONE_PLATFORM_LEFT, 1120, 280],
+                [platforms.STONE_PLATFORM_MIDDLE, 1190, 280],
+                [platforms.STONE_PLATFORM_RIGHT, 1260, 280]]
+
+        for platform in level:
+            block = platforms.Platform(platform[0])
+            block.rect.x = platform[1]
+            block.rect.y = platform[2]
+            block.player = self.player
+            self.platform_list.add(block)
+
+        block = platforms.MovingPlatform(platforms.STONE_PLATFORM_MIDDLE)
+        block.rect.x = 1500
+        block.rect.y = 300
+        block.boundary_top = 100
+        block.boundary_bottom = 550
+        block.change_y = -1
         block.player = self.player
         block.level = self
         self.platform_list.add(block)

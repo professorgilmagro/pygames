@@ -3,8 +3,8 @@
 
 # Gilmar S. Santos <gilmar.pythonman@outlook.com>
 
-import pygame
 import os
+import pygame
 
 import utils
 import levels
@@ -25,15 +25,10 @@ def main():
     player = Player()
     music = utils.load_sound("8_bit_theme.wav")
 
-    # prepara o personagem na tela
-    active_sprite_list = pygame.sprite.Group()
-    player.rect.x = 340
-    player.rect.y = const.SCREEN_HEIGHT - player.rect.height
-    active_sprite_list.add(player)
-
     # Cria os niveis do jogo
     level_list = []
     level_list.append(levels.Level_01(player))
+    level_list.append(levels.Level_02(player))
 
     # Set the current level
     level_number = 0
@@ -41,6 +36,11 @@ def main():
 
     active_sprite_list = pygame.sprite.Group()
     player.level = current_level
+
+     # prepara o personagem na tela
+    player.rect.x = 340
+    player.rect.y = const.SCREEN_HEIGHT - player.rect.height
+    active_sprite_list.add(player)
 
     clock = pygame.time.Clock()
     running = True
@@ -69,7 +69,7 @@ def main():
         if not pygame.mixer.get_busy():
             music.play()
 
-        screen.fill(const.BLACK)
+        screen.fill(const.GREEN)
         active_sprite_list.update()
         current_level.update()
 
@@ -77,13 +77,23 @@ def main():
         if player.rect.x >= 500:
             diff = player.rect.x - 500
             player.rect.x = 500
-            current_level.shift_world(-diff)
+            current_level.change_world(-diff)
 
         if player.rect.x <= 120:
             diff = 120 - player.rect.x
             player.rect.x = 120
-            current_level.shift_world(diff)
+            current_level.change_world(diff)
 
+         # Avança para o próximo level
+        current_position = player.rect.x + current_level.world_shift
+        if current_position < current_level.level_limit:
+            player.rect.x = 120
+            if level_number < len(level_list) - 1:
+                level_number += 1
+                current_level = level_list[level_number]
+                player.level = current_level
+
+        current_level.draw(screen)
         active_sprite_list.draw(screen)
 
         clock.tick(60)

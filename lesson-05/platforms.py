@@ -1,6 +1,7 @@
 import pygame
 
-from player import SpriteSheet
+import constants as const
+from utils import SpriteSheet
 
 GRASS_LEFT = (576, 720, 70, 70)
 GRASS_RIGHT = (576, 576, 70, 70)
@@ -18,7 +19,7 @@ class Platform(pygame.sprite.Sprite):
     def __init__(self, sprite_sheet_data):
         pygame.sprite.Sprite.__init__(self)
 
-        sprite_sheet = SpriteSheet("tiles_spritesheet.png")
+        sprite_sheet = SpriteSheet("tiles_spritesheet.png", const.BLACK)
 
         # Obtem a imagen a partir das posicoes e tamanho do sprite
         self.image = sprite_sheet.get_image(sprite_sheet_data[0],
@@ -80,6 +81,6 @@ class MovingPlatform(Platform):
         if self.rect.bottom > self.limit_bottom or self.rect.top < self.limit_top:
             self.change_y *= -1
 
-        cur_pos = self.rect.x - self.level.change_world
+        cur_pos = self.rect.x - self.level.world_shift
         if cur_pos < self.limit_left or cur_pos > self.limit_right:
             self.change_x *= -1

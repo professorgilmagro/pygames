@@ -25,12 +25,12 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        sprite_sheet = SpriteSheet("ogre.png")
+        sprite_sheet = utils.SpriteSheet("ogre.png", const.WHITE)
 
         # x, y, width, height
 
         # carrega todas as images (fatiadas) e a guarda nos frames
-        for x in range(0, 4):
+        for x in xrange(0, 4):
             pos_left = (107 * x, 145, 107, 145)
             pos_right = (107 * x, 290, 107, 145)
             self.walk_frames_left.append(sprite_sheet.get_image(*pos_left))
@@ -87,7 +87,7 @@ class Player(pygame.sprite.Sprite):
             self.move_y = 0
 
             if isinstance(block, MovingPlatform):
-                self.rect.x += block.move_x
+                self.rect.x += block.change_x
 
     def calc_gravity(self):
         """
@@ -129,33 +129,3 @@ class Player(pygame.sprite.Sprite):
         if (list_len > 0 or self.rect.bottom >= const.SCREEN_HEIGHT):
             self.move_y = -10
             utils.load_sound("jump.wav").play()
-
-
-class SpriteSheet(object):
-    """
-    Classe usada para cortar imagens dentro de um spritesheet
-    """
-
-    sprite_sheet = None
-
-    def __init__(self, file_name):
-
-        # Carrega o sprite sheet.
-        self.sprite_sheet = utils.load_image(file_name)[0]
-
-    def get_image(self, x, y, width, height):
-        """ Retorna uma imagem de um spritesheet maior
-            a partir da localizacao x, y do item desejado
-            e a largura e altura do sprite. """
-
-        # Cria uma nova imagem em branco
-        image = pygame.Surface([width, height]).convert()
-
-        # Copia a imagem (sprite) para dentro da nova imagem
-        image.blit(self.sprite_sheet, (0, 0), (x, y, width, height))
-
-        # Assume o branco como cor transparente
-        image.set_colorkey(const.WHITE)
-
-        # retorna a imagem
-        return image
