@@ -31,8 +31,8 @@ class Player(pygame.sprite.Sprite):
 
         # carrega todas as images (fatiadas) e a guarda nos frames
         for x in xrange(0, 4):
-            pos_left = (107 * x, 145, 107, 145)
-            pos_right = (107 * x, 290, 107, 145)
+            pos_left = (107 * x, 145, 107, 143)
+            pos_right = (107 * x, 290, 107, 143)
             self.walk_frames_left.append(sprite_sheet.get_image(*pos_left))
             self.walk_frames_right.append(sprite_sheet.get_image(*pos_right))
 

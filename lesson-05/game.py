@@ -23,12 +23,13 @@ def main():
     pygame.mouse.set_visible(False)
 
     player = Player()
-    music = utils.load_sound("8_bit_theme.wav")
 
     # Cria os niveis do jogo
     level_list = []
     level_list.append(levels.Level_01(player))
     level_list.append(levels.Level_02(player))
+    level_list.append(levels.Level_03(player))
+    level_list.append(levels.Level_04(player))
 
     # Set the current level
     level_number = 0
@@ -67,7 +68,7 @@ def main():
                     player.stop()
 
         if not pygame.mixer.get_busy():
-            music.play()
+            current_level.sound.play()
 
         screen.fill(const.GREEN)
         active_sprite_list.update()
@@ -90,8 +91,10 @@ def main():
             player.rect.x = 120
             if level_number < len(level_list) - 1:
                 level_number += 1
+                current_level.sound.stop()
                 current_level = level_list[level_number]
                 player.level = current_level
+                player.level.sound.play()
 
         current_level.draw(screen)
         active_sprite_list.draw(screen)

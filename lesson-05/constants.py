@@ -14,4 +14,5 @@ BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 
-MEDIA_DIR = "data"
+IMAGE_DIR = "data/images"
+SOUND_DIR = "data/sounds"

@@ -9,7 +9,7 @@ Funcoes comuns
 
 def load_image(name, colorkey=None, resize=None):
     # Cria a imagem a partir do nome informado
-    filename = os.path.join(const.MEDIA_DIR, name)
+    filename = os.path.join(const.IMAGE_DIR, name)
     try:
         image = pygame.image.load(filename)
     except pygame.error, message:
@@ -36,11 +36,11 @@ def load_sound(sound_name):
     if not pygame.mixer or not pygame.mixer.get_init():
         return NoneSound()
 
-    fullname = os.path.join("data", sound_name)
+    filename = os.path.join(const.SOUND_DIR, sound_name)
     try:
-        sound = pygame.mixer.Sound(fullname)
+        sound = pygame.mixer.Sound(filename)
     except pygame.error, message:
-        print "Nao foi possivel carregar o som:", fullname
+        print "Nao foi possivel carregar o som:", filename
         raise message
     return sound
 
