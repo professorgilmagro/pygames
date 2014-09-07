@@ -27,8 +27,6 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         sprite_sheet = utils.SpriteSheet("ogre.png", const.WHITE)
 
-        # x, y, width, height
-
         # carrega todas as images (fatiadas) e a guarda nos frames
         for x in xrange(0, 4):
             pos_left = (107 * x, 145, 107, 143)
@@ -36,7 +34,7 @@ class Player(pygame.sprite.Sprite):
             self.walk_frames_left.append(sprite_sheet.get_image(*pos_left))
             self.walk_frames_right.append(sprite_sheet.get_image(*pos_right))
 
-         # Defina a imagem inicial
+        # Defina a imagem inicial
         self.image = self.walk_frames_right[0]
 
         # Recupera a area da imagem

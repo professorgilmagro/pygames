@@ -69,18 +69,22 @@ class Level_01(Level):
         Array com o tipo de plataforma, posicao x, y e
         localizado dentro do sprite
         """
-        level = [[platforms.GRASS_LEFT, 500, 500],
-                 [platforms.GRASS_MIDDLE, 570, 500],
-                 [platforms.GRASS_RIGHT, 640, 500],
-                 [platforms.GRASS_LEFT, 800, 400],
-                 [platforms.GRASS_MIDDLE, 870, 400],
-                 [platforms.GRASS_RIGHT, 940, 400],
-                 [platforms.GRASS_LEFT, 1000, 500],
-                 [platforms.GRASS_MIDDLE, 1070, 500],
-                 [platforms.GRASS_RIGHT, 1140, 500],
-                 [platforms.STONE_PLATFORM_LEFT, 1120, 280],
-                 [platforms.STONE_PLATFORM_MIDDLE, 1190, 280],
-                 [platforms.STONE_PLATFORM_RIGHT, 1260, 280]]
+        level = [
+                [platforms.GRASS_LEFT, 500, 500],
+                [platforms.GRASS_MIDDLE, 570, 500],
+                [platforms.GRASS_RIGHT, 640, 500],
+                [platforms.GRASS_LEFT, 800, 400],
+                [platforms.GRASS_MIDDLE, 870, 400],
+                [platforms.GRASS_RIGHT, 940, 400],
+                [platforms.GRASS_LEFT, 1000, 500],
+                [platforms.GRASS_MIDDLE, 1070, 500],
+                [platforms.GRASS_RIGHT, 1140, 500],
+                [platforms.STONE_PLATFORM_LEFT, 1120, 280],
+                [platforms.STONE_PLATFORM_MIDDLE, 1190, 280],
+                [platforms.STONE_PLATFORM_RIGHT, 1260, 280],
+                [platforms.YELLOW_BOX, 1360, 20],
+                [platforms.ARROW_RIGHT, 0, 530],
+                [platforms.EXIT, 1900, 530]]
 
         # Recupera as plataformas a partir das coordernadas em level
         for platform in level:
@@ -125,7 +129,8 @@ class Level_02(Level):
                 [platforms.STONE_PLATFORM_RIGHT, 1140, 500],
                 [platforms.STONE_PLATFORM_LEFT, 1120, 280],
                 [platforms.STONE_PLATFORM_MIDDLE, 1190, 280],
-                [platforms.STONE_PLATFORM_RIGHT, 1260, 280]]
+                [platforms.STONE_PLATFORM_RIGHT, 1260, 280],
+                [platforms.EXIT, 1900, 530]]
 
         for platform in level:
             block = platforms.Platform(platform[0])
@@ -168,7 +173,11 @@ class Level_03(Level):
                 [platforms.STONE_PLATFORM_RIGHT, 1140, 500],
                 [platforms.STONE_PLATFORM_LEFT, 1120, 280],
                 [platforms.STONE_PLATFORM_MIDDLE, 1190, 280],
-                [platforms.STONE_PLATFORM_RIGHT, 1260, 280]]
+                [platforms.STONE_PLATFORM_RIGHT, 1260, 280],
+                [platforms.GRASS_LEFT, 1700, 500],
+                [platforms.GRASS_MIDDLE, 1770, 500],
+                [platforms.GRASS_RIGHT, 1840, 500],
+                [platforms.EXIT, 1950, 530]]
 
         for platform in level:
             block = platforms.Platform(platform[0])
@@ -211,7 +220,8 @@ class Level_04(Level):
                 [platforms.STONE_PLATFORM_RIGHT, 1140, 500],
                 [platforms.STONE_PLATFORM_LEFT, 1120, 280],
                 [platforms.STONE_PLATFORM_MIDDLE, 1190, 280],
-                [platforms.STONE_PLATFORM_RIGHT, 1260, 280]]
+                [platforms.STONE_PLATFORM_RIGHT, 1260, 280],
+                [platforms.EXIT, 1900, 530]]
 
         for platform in level:
             block = platforms.Platform(platform[0])
