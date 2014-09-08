@@ -20,6 +20,7 @@ def main():
 
     screen = pygame.display.set_mode(const.SCREEN_MODE)
     pygame.display.set_caption("Arcade Game")
+    pygame.display.set_icon(utils.load_image("icon.png"))
     pygame.mouse.set_visible(False)
 
     player = Player()
@@ -47,25 +48,26 @@ def main():
     running = True
 
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+        event = pygame.event.poll()
 
-            key = utils.get_event_key(event)
-            if key == pygame.K_LEFT:
-                player.go_left()
+        if event.type == pygame.QUIT:
+            running = False
 
-            if key == pygame.K_RIGHT:
-                player.go_right()
+        key_down = utils.get_event_key(event, pygame.KEYDOWN)
+        if key_down == pygame.K_LEFT:
+            player.go_left()
 
-            if key == pygame.K_UP:
-                player.jump()
+        if key_down == pygame.K_RIGHT:
+            player.go_right()
 
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT and player.move_x < 0:
-                    player.stop()
-                if event.key == pygame.K_RIGHT and player.move_x > 0:
-                    player.stop()
+        if key_down == pygame.K_UP:
+            player.jump()
+
+        key_up = utils.get_event_key(event, pygame.KEYUP)
+        if key_up == pygame.K_LEFT and player.move_x < 0:
+            player.stop()
+        if key_up == pygame.K_RIGHT and player.move_x > 0:
+            player.stop()
 
         if not pygame.mixer.get_busy():
             current_level.sound.play()

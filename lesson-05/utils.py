@@ -45,8 +45,8 @@ def load_sound(sound_name):
     return sound
 
 
-def get_event_key(event):
-    if event.type == pygame.KEYDOWN:
+def get_event_key(event, key_event):
+    if event.type == key_event:
         return event.key
     return None
 

@@ -86,6 +86,10 @@ class Level_01(Level):
                 [platforms.ARROW_RIGHT, 0, 530],
                 [platforms.EXIT, 1900, 530]]
 
+        # criando uma travessia de corda
+        for x in xrange(1, 8):
+            level.append([platforms.ROPE, 1360 + 70 * x, 300]),
+
         # Recupera as plataformas a partir das coordernadas em level
         for platform in level:
             block = platforms.Platform(platform[0])
@@ -130,7 +134,12 @@ class Level_02(Level):
                 [platforms.STONE_PLATFORM_LEFT, 1120, 280],
                 [platforms.STONE_PLATFORM_MIDDLE, 1190, 280],
                 [platforms.STONE_PLATFORM_RIGHT, 1260, 280],
+                [platforms.BRIGDE, 1360, 150],
                 [platforms.EXIT, 1900, 530]]
+
+        # criando uma ponte de madeira
+        for x in xrange(1, 10):
+            level.append([platforms.BRIGDE, 1360 + 70 * x, 150]),
 
         for platform in level:
             block = platforms.Platform(platform[0])
