@@ -11,6 +11,7 @@ import levels
 import constants as const
 
 from player import Player
+from progress_bar import Loader
 
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 
@@ -24,6 +25,14 @@ def main():
     pygame.mouse.set_visible(False)
 
     player = Player()
+
+    # preload
+    initial_bkg = utils.load_image("initial_background.jpg")
+    screen.blit(initial_bkg, (0, 0))
+
+    loader = Loader(screen)
+    loader.render()
+    pygame.display.update()
 
     # Cria os niveis do jogo
     level_list = []
@@ -52,6 +61,9 @@ def main():
 
         if event.type == pygame.QUIT:
             running = False
+
+        if loader.run():
+            continue
 
         key_down = utils.get_event_key(event, pygame.KEYDOWN)
         if key_down == pygame.K_LEFT:
